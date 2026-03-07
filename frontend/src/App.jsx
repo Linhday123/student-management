@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { UserPlus, GraduationCap, Github } from 'lucide-react';
+import { UserPlus, GraduationCap, Github, Home, Users, BookOpen } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
+import Dashboard from './components/Dashboard';
+import ClassList from './components/ClassList';
 import StudentList from './components/StudentList';
 import StudentForm from './components/StudentForm';
 
@@ -29,7 +31,46 @@ function Navbar() {
           </Link>
 
           {/* Navigation Items */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2 md:space-x-6">
+            
+            <Link 
+              to="/dashboard" 
+              className={`flex items-center space-x-2 px-4 md:px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ${
+                location.pathname === '/dashboard' || location.pathname === '/'
+                  ? 'bg-slate-800/50 text-indigo-400 border border-indigo-500/30 shadow-[0_0_10px_rgba(99,102,241,0.2)]'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Trang Chủ</span>
+            </Link>
+
+            <Link 
+              to="/classes" 
+              className={`flex items-center space-x-2 px-4 md:px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ${
+                location.pathname === '/classes'
+                  ? 'bg-slate-800/50 text-purple-400 border border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.2)]'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              <BookOpen className="h-4 w-4" />
+              <span className="hidden sm:inline">Lớp Học</span>
+            </Link>
+
+            <Link 
+              to="/students" 
+              className={`flex items-center space-x-2 px-4 md:px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ${
+                location.pathname === '/students' || location.pathname === '/add' || location.pathname.startsWith('/edit')
+                  ? 'bg-slate-800/50 text-emerald-400 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Hồ sơ SV</span>
+            </Link>
+
+            <div className="h-6 w-px bg-white/10 hidden md:block mx-2"></div>
+            
             <a 
               href="https://github.com/Linhday123/student-management" 
               target="_blank" 
@@ -39,18 +80,6 @@ function Navbar() {
             >
               <Github className="h-5 w-5" />
             </a>
-            
-            <Link 
-              to="/add" 
-              className={`flex items-center space-x-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300 border ${
-                location.pathname === '/add'
-                  ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent hover:from-indigo-500 hover:to-purple-500 glow-primary'
-              }`}
-            >
-              <UserPlus className="h-4 w-4" />
-              <span>Thêm Mới</span>
-            </Link>
           </div>
 
         </div>
@@ -95,9 +124,12 @@ function App() {
           <Navbar />
 
           {/* Main Content Area */}
-          <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in relative">
+          <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in relative z-20">
             <Routes>
-              <Route path="/" element={<StudentList />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/classes" element={<ClassList />} />
+              <Route path="/students" element={<StudentList />} />
               <Route path="/add" element={<StudentForm />} />
               <Route path="/edit/:id" element={<StudentForm />} />
             </Routes>
