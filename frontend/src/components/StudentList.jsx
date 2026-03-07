@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PencilLine, Trash2, FolderOpen, Loader2, AlertCircle, Search, Hash } from 'lucide-react';
+import { PencilLine, Trash2, Search, User, BookOpen, Star, Hash, GraduationCap, Loader2 } from 'lucide-react';
 import api from '../api';
+
+const LoadingSkeleton = () => (
+  <div className="animate-pulse space-y-4">
+    {[1, 2, 3, 4, 5].map((i) => (
+      <div key={i} className="h-16 bg-white/5 rounded-xl border border-white/5"></div>
+    ))}
+  </div>
+);
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);
@@ -21,20 +29,21 @@ const StudentList = () => {
       setError(null);
     } catch (err) {
       console.error('Error fetching students:', err);
-      setError('System could not connect to the backend server. Please verify it is running on port 8000.');
+      setError('Connection to backend server failed. Ensure FastAPI is running on port 8000.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (student_id, name) => {
-    if (window.confirm(`Are you certain you wish to remove ${name} from the system? This action cannot be undone.`)) {
+    if (window.confirm(`Delete record for ${name}? This action is irreversible.`)) {
       try {
         await api.delete(`/students/${student_id}`);
         setStudents(students.filter(student => student.student_id !== student_id));
+        // Optional: you could add a toast here instead of window.alert
       } catch (err) {
         console.error('Error deleting student:', err);
-        alert('Encountered an error while attempting to delete the student record.');
+        alert('Encountered an error while deleting the record.');
       }
     }
   };
@@ -45,34 +54,68 @@ const StudentList = () => {
     student.major.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Loading State
-  if (loading && students.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center h-[60vh] text-indigo-500">
-        <Loader2 className="animate-spin h-12 w-12 mb-4" />
-        <p className="text-slate-500 font-medium tracking-wide animate-pulse">Loading student records...</p>
-      </div>
-    );
-  }
+  // Statistics Calculation
+  const avgGpa = students.length > 0 
+    ? (students.reduce((acc, curr) => acc + curr.gpa, 0) / students.length).toFixed(2) 
+    : "0.00";
+  const uniqueMajors = new Set(students.map(s => s.major)).size;
 
   return (
     <div className="space-y-8">
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">System Directory</h1>
-          <p className="mt-2 text-slate-500">Manage and oversee all registered student information.</p>
+      
+      {/* Header text with Gradient */}
+      <div className="mb-2">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          System <span className="text-gradient">Directory</span>
+        </h1>
+        <p className="mt-3 text-lg text-slate-400 max-w-2xl font-light">
+          Manage and oversee all registered student information in the central database.
+        </p>
+      </div>
+
+      {/* Stats Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="glass-panel p-6 flex items-center space-x-4">
+          <div className="bg-indigo-500/20 p-3 rounded-2xl border border-indigo-500/30">
+            <User className="h-6 w-6 text-indigo-400" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-slate-400">Total Students</p>
+            <h3 className="text-2xl font-bold text-white">{students.length}</h3>
+          </div>
         </div>
         
-        {/* Search Bar */}
-        <div className="relative w-full sm:w-80 group">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+        <div className="glass-panel p-6 flex items-center space-x-4">
+          <div className="bg-emerald-500/20 p-3 rounded-2xl border border-emerald-500/30">
+            <Star className="h-6 w-6 text-emerald-400" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-slate-400">Average GPA</p>
+            <h3 className="text-2xl font-bold text-white">{avgGpa}</h3>
+          </div>
+        </div>
+
+        <div className="glass-panel p-6 flex items-center space-x-4">
+          <div className="bg-purple-500/20 p-3 rounded-2xl border border-purple-500/30">
+            <BookOpen className="h-6 w-6 text-purple-400" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-slate-400">Total Majors</p>
+            <h3 className="text-2xl font-bold text-white">{uniqueMajors}</h3>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="glass-panel p-2 flex items-center">
+        <div className="relative w-full group">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-400 transition-colors" />
           </div>
           <input
             type="text"
-            className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow shadow-sm font-medium sm:text-sm"
-            placeholder="Search by name, ID, or major..."
+            className="w-full bg-transparent border-0 py-3 pl-12 pr-4 text-white placeholder-slate-400 focus:ring-0 focus:outline-none sm:text-base font-medium"
+            placeholder="Search by name, student ID, or major..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -81,142 +124,146 @@ const StudentList = () => {
 
       {/* Error Alert */}
       {error && (
-        <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 p-4 rounded-2xl flex items-start shadow-sm">
-          <AlertCircle className="h-5 w-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
-          <p className="text-sm text-red-700 font-medium leading-relaxed">{error}</p>
+        <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-2xl flex items-start backdrop-blur-md">
+          <div className="bg-rose-500/20 p-1.5 rounded-lg mr-3 shadow-[0_0_10px_rgba(244,63,94,0.2)]">
+            <span className="text-rose-400 font-bold px-1.5">!</span>
+          </div>
+          <p className="text-sm text-rose-200 font-medium leading-relaxed pt-1">{error}</p>
         </div>
       )}
 
-      {/* Main Content Area */}
-      {students.length === 0 && !loading && !error ? (
-        // Empty State
-        <div className="bg-white/60 backdrop-blur-md rounded-3xl shadow-soft border border-slate-200 p-16 text-center transition-all">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-indigo-50 mb-6">
-            <FolderOpen className="h-10 w-10 text-indigo-400" />
-          </div>
-          <h3 className="text-xl font-semibold text-slate-900">Database is empty</h3>
-          <p className="mt-2 text-slate-500 max-w-sm mx-auto">
-            You haven't added any students to the system yet. Begin by adding a new student profile.
-          </p>
-          <div className="mt-8">
+      {/* Main Content Area Lineup */}
+      <div className="glass-panel overflow-hidden relative border-t-2 border-t-indigo-500/50">
+        
+        {loading ? (
+           <div className="p-8"><LoadingSkeleton /></div>
+        ) : students.length === 0 && !error ? (
+          // Empty State
+          <div className="p-16 text-center">
+            <div className="inline-flex justify-center items-center w-24 h-24 rounded-full bg-white/5 border border-white/10 mb-6 shadow-[0_0_30px_rgba(255,255,255,0.05)]">
+              <GraduationCap className="h-12 w-12 text-slate-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">No students found</h3>
+            <p className="text-slate-400 max-w-sm mx-auto mb-8 font-medium">
+              Your roster is currently empty. Add your first student to get started tracking records.
+            </p>
             <Link
               to="/add"
-              className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all hover:shadow-glow"
+              className="inline-flex items-center px-8 py-3.5 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)]"
             >
-              Get Started
+              Add First Student
             </Link>
           </div>
-        </div>
-      ) : (
-        // Data Table
-        <div className="bg-white rounded-3xl shadow-soft border border-slate-200/60 overflow-hidden relative">
-          
-          {/* subtle gradient at top of table */}
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-
+        ) : (
+          // Data Table
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-100">
-              <thead className="bg-slate-50/50">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-slate-900/60">
                 <tr>
-                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5"><Hash className="w-4 h-4" /> ID</span>
+                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider whitespace-nowrap">
+                    <span className="flex items-center gap-1.5"><Hash className="w-4 h-4 text-indigo-400" /> ID</span>
                   </th>
-                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
                     Full Name
                   </th>
-                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
                     Birth Year
                   </th>
-                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Major / Program
+                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                    Major
                   </th>
-                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Cum. GPA
+                  <th scope="col" className="px-6 py-5 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                    GPA
                   </th>
-                  <th scope="col" className="px-6 py-5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-5 text-right text-xs font-semibold text-slate-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-slate-100">
+              <tbody className="divide-y divide-white/5">
                 {filteredStudents.length > 0 ? (
-                  filteredStudents.map((student) => (
-                    <tr key={student.student_id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-700">
-                        {student.student_id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-indigo-700 font-bold text-xs ring-2 ring-white">
-                            {student.name.charAt(0).toUpperCase()}
+                  filteredStudents.map((student) => {
+                    const isExcellent = student.gpa >= 3.5;
+                    const isGood = student.gpa >= 2.5 && student.gpa < 3.5;
+                    const isPoor = student.gpa < 2.5;
+
+                    return (
+                      <tr key={student.student_id} className="hover:bg-white/5 transition-colors group animate-fade-in relative">
+                        <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-white">
+                          <span className="bg-white/10 px-2 py-1 rounded-md border border-white/5">{student.student_id}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm shadow-[0_0_10px_rgba(99,102,241,0.3)] border border-white/20">
+                              {student.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="ml-4">
+                              <span className="text-sm font-bold text-white block">{student.name}</span>
+                            </div>
                           </div>
-                          <div className="ml-3">
-                            <span className="text-sm font-medium text-slate-900 block">{student.name}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium">
-                        {student.birth_year}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                          {student.major}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <div className={`h-2 w-2 rounded-full ${
-                            student.gpa >= 3.5 ? 'bg-emerald-500' : 
-                            student.gpa >= 2.0 ? 'bg-amber-400' : 'bg-rose-500'
-                          }`}></div>
-                          <span className={`text-sm font-bold ${
-                            student.gpa >= 3.5 ? 'text-emerald-700' : 
-                            student.gpa >= 2.0 ? 'text-amber-700' : 'text-rose-700'
-                          }`}>
-                            {student.gpa.toFixed(2)}
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-300 font-medium">
+                          {student.birth_year}
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm">
+                          <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shadow-sm">
+                            {student.major}
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link
-                            to={`/edit/${student.student_id}`}
-                            state={{ student }}
-                            className="text-indigo-600 hover:text-white hover:bg-indigo-600 bg-indigo-50 p-2 rounded-lg transition-all border border-indigo-100 hover:border-indigo-600"
-                            title="Edit Record"
-                          >
-                            <PencilLine className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(student.student_id, student.name)}
-                            className="text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-50 p-2 rounded-lg transition-all border border-rose-100 hover:border-rose-600 leading-none"
-                            title="Delete Record"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <div className={`inline-flex items-center px-2.5 py-1 rounded-lg border ${
+                            isExcellent ? 'bg-emerald-500/10 border-emerald-500/30' : 
+                            isGood ? 'bg-amber-500/10 border-amber-500/30' : 
+                            'bg-rose-500/10 border-rose-500/30'
+                          }`}>
+                            <div className={`h-1.5 w-1.5 rounded-full mr-2 shadow-[0_0_5px_currentColor] ${
+                              isExcellent ? 'bg-emerald-400 text-emerald-400' : 
+                              isGood ? 'bg-amber-400 text-amber-400' : 
+                              'bg-rose-400 text-rose-400'
+                            }`}></div>
+                            <span className={`text-sm font-bold tracking-wide ${
+                              isExcellent ? 'text-emerald-300' : 
+                              isGood ? 'text-amber-300' : 
+                              'text-rose-300'
+                            }`}>
+                              {student.gpa.toFixed(2)}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex justify-end space-x-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                            <Link
+                              to={`/edit/${student.student_id}`}
+                              state={{ student }}
+                              className="text-indigo-300 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/30 p-2.5 rounded-xl transition-all border border-indigo-500/20 hover:border-indigo-400 shadow-sm"
+                              title="Edit Record"
+                            >
+                              <PencilLine className="h-4 w-4" />
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(student.student_id, student.name)}
+                              className="text-rose-300 hover:text-white bg-rose-500/10 hover:bg-rose-500/40 p-2.5 rounded-xl transition-all border border-rose-500/20 hover:border-rose-400 shadow-sm leading-none"
+                              title="Delete Record"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
-                      No matching records found for "<span className="font-semibold text-slate-900">{searchTerm}</span>"
+                    <td colSpan="6" className="px-6 py-12 text-center text-slate-400">
+                      No matching records found for "<span className="font-semibold text-white">{searchTerm}</span>"
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
-          
-          {/* Pagination/Footer info area */}
-          <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-            <p className="text-xs text-slate-500 font-medium tracking-wide text-center w-full">
-              Showing {filteredStudents.length} of {students.length} entries.
-            </p>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

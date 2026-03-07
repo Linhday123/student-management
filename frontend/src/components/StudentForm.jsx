@@ -39,7 +39,7 @@ const StudentForm = () => {
       if (student) {
         setFormData(student);
       } else {
-        setError("Warning: Student record could not be localized.");
+        setError("Student record could not be localized.");
       }
     } catch (err) {
       console.error("Error fetching student Details", err);
@@ -73,7 +73,7 @@ const StudentForm = () => {
 
     try {
       if (formData.gpa < 0 || formData.gpa > 4.0) {
-        throw new Error("Grade Point Average calculation error: Must remain within 0.0 and 4.0 parameters.");
+        throw new Error("GPA must remain within 0.0 and 4.0 parameters.");
       }
 
       if (isEditMode) {
@@ -93,29 +93,38 @@ const StudentForm = () => {
       } else if (err.message) {
         setError(err.message);
       } else {
-        setError('Transaction aborted. A critical fault occurred during processing.');
+        setError('A critical fault occurred during processing.');
       }
       setLoading(false);
     }
   };
 
+  // GPA visual indicator calculate
+  const getGpaColorInfo = (val) => {
+    if(val >= 3.5) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+    if(val >= 2.5) return "text-amber-400 bg-amber-500/10 border-amber-500/20";
+    return "text-rose-400 bg-rose-500/10 border-rose-500/20";
+  };
+
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto animate-modal">
       {/* Header and Back Button */}
       <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-5">
           <Link 
             to="/" 
-            className="p-2 bg-white rounded-full shadow-sm border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 group"
+            className="p-3 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all shadow-lg group relative overflow-hidden"
           >
-            <ArrowLeft className="h-5 w-5 group-hover:-translate-x-0.5 transition-transform" />
+            {/* Hover Glow Effect inside back button */}
+            <div className="absolute inset-0 bg-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <ArrowLeft className="h-5 w-5 relative z-10 group-hover:-translate-x-1 transition-transform" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-white tracking-tight">
               {isEditMode ? 'Modify Record' : 'Enroll Student'}
             </h1>
-            <p className="text-sm text-slate-500 font-medium">
-              {isEditMode ? 'Update academic information and details.' : 'Register a new individual into the academic roster.'}
+            <p className="text-sm text-slate-400 font-medium mt-1">
+              {isEditMode ? 'Update academic information and details in the system.' : 'Register a new individual into the academic roster.'}
             </p>
           </div>
         </div>
@@ -123,98 +132,89 @@ const StudentForm = () => {
 
       {/* Alert Messages */}
       {success && (
-        <div className="mb-8 bg-emerald-50 border border-emerald-200 p-5 rounded-2xl flex items-center shadow-sm animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0" />
-          <p className="text-base text-emerald-800 font-medium">
+        <div className="mb-8 glass-panel !bg-emerald-500/10 !border-emerald-500/30 p-5 flex items-center shadow-[0_0_30px_rgba(16,185,129,0.2)] animate-fade-in">
+          <CheckCircle2 className="h-6 w-6 text-emerald-400 mr-3 flex-shrink-0" />
+          <p className="text-base text-emerald-100 font-medium">
             Record successfully committed to the database! Redirecting...
           </p>
         </div>
       )}
 
       {error && (
-        <div className="mb-8 bg-rose-50 border border-rose-200 p-5 rounded-2xl flex items-start shadow-sm animate-in fade-in slide-in-from-top-2">
-          <div className="bg-white p-1 rounded-full shadow-sm mr-3 flex-shrink-0">
-            <span className="text-rose-500 font-bold px-2 py-0.5">!</span>
+        <div className="mb-8 glass-panel !bg-rose-500/10 !border-rose-500/30 p-5 flex items-start shadow-[0_0_30px_rgba(244,63,94,0.2)] animate-fade-in">
+          <div className="bg-rose-500/20 p-1.5 rounded-lg mr-3 shadow-inner">
+            <span className="text-rose-400 font-bold px-1.5 flex items-center h-full">!</span>
           </div>
-          <p className="text-sm text-rose-800 font-medium leading-relaxed pt-1">
+          <p className="text-sm text-rose-200 font-medium leading-relaxed pt-1.5">
             {error}
           </p>
         </div>
       )}
 
-      {/* Main Form Card */}
-      <div className="bg-white rounded-3xl shadow-soft border border-slate-200/80 overflow-hidden">
+      {/* Main Form Glass Card */}
+      <div className="glass-panel overflow-hidden relative">
         {/* Visual Header Graphic */}
-        <div className="h-32 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 relative overflow-hidden">
-             {/* Abstract Pattern overlay */}
-             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-             <div className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full border-4 border-white/20"></div>
-             <div className="absolute bottom-4 right-12 w-16 h-16 rounded-full border-2 border-white/10"></div>
+        <div className="h-28 bg-gradient-to-r from-indigo-600/50 via-purple-600/50 to-pink-600/50 relative overflow-hidden border-b border-white/10">
+             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent"></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-8 pt-8 pb-10">
+        <form onSubmit={handleSubmit} className="px-8 pt-6 pb-10">
           
-          {/* Form Header Avatar Idea */}
-          <div className="-mt-20 mb-8 flex justify-between items-end relative z-10">
-            <div className="p-2 bg-white rounded-2xl shadow-sm inline-block border border-slate-100">
-               <div className="w-20 h-20 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+          {/* Form Header Avatar */}
+          <div className="-mt-16 mb-10 flex justify-between items-end relative z-10">
+            <div className="p-2.5 bg-slate-900 rounded-3xl shadow-2xl inline-block border border-white/10 relative">
+               <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full"></div>
+               <div className="w-20 h-20 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center text-indigo-300 border border-white/5 relative z-10">
                  <UserCircle2 className="w-12 h-12" />
                </div>
             </div>
             {isEditMode && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 mb-2 border border-amber-200 shadow-sm">
+              <span className="inline-flex items-center px-4 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 mb-2 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.2)] tracking-wider">
                 EDITING MODE
               </span>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-8">
             
-            {/* Identity Group */}
-            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="student_id" className="flex items-center text-sm font-semibold text-slate-700">
-                  <Hash className="w-4 h-4 mr-1.5 text-slate-400" /> Identifier (ID)
-                </label>
-                <input
-                  type="text"
-                  name="student_id"
-                  id="student_id"
-                  required
-                  disabled={isEditMode}
-                  value={formData.student_id}
-                  onChange={handleChange}
-                  className={`block w-full rounded-xl border-slate-200 px-4 py-3.5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium ${
-                    isEditMode ? 'bg-slate-50 text-slate-500 cursor-not-allowed border-dashed' : 'bg-white shadow-sm border'
-                  }`}
-                  placeholder="e.g., S202612345"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="name" className="flex items-center text-sm font-semibold text-slate-700">
-                  <UserCircle2 className="w-4 h-4 mr-1.5 text-slate-400" /> Full Legal Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="block w-full rounded-xl border border-slate-200 px-4 py-3.5 bg-white shadow-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400"
-                  placeholder="e.g., Katherine Johnson"
-                />
-              </div>
+            <div className="space-y-3 relative group">
+              <label htmlFor="student_id" className="flex items-center text-sm font-semibold text-slate-300 tracking-wide">
+                <Hash className="w-4 h-4 mr-2 text-indigo-400" /> Identifier (ID)
+              </label>
+              <input
+                type="text"
+                name="student_id"
+                id="student_id"
+                required
+                disabled={isEditMode}
+                value={formData.student_id}
+                onChange={handleChange}
+                className={`block w-full px-5 py-3.5 font-medium ${
+                  isEditMode ? 'bg-white/5 text-slate-500 cursor-not-allowed border-dashed border-white/10 rounded-xl' : 'glass-input'
+                }`}
+                placeholder="e.g., S202612345"
+              />
             </div>
 
-            {/* Divider */}
-            <div className="md:col-span-2 border-t border-slate-100 my-2"></div>
+            <div className="space-y-3">
+              <label htmlFor="name" className="flex items-center text-sm font-semibold text-slate-300 tracking-wide">
+                <UserCircle2 className="w-4 h-4 mr-2 text-indigo-400" /> Full Legal Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="block w-full px-5 py-3.5 glass-input font-medium"
+                placeholder="e.g., Nova Stella"
+              />
+            </div>
 
-            {/* Academic & Stats Group */}
-            <div className="space-y-2">
-              <label htmlFor="major" className="flex items-center text-sm font-semibold text-slate-700">
-                <BookOpen className="w-4 h-4 mr-1.5 text-slate-400" /> Academic Major
+            <div className="space-y-3">
+              <label htmlFor="major" className="flex items-center text-sm font-semibold text-slate-300 tracking-wide">
+                <BookOpen className="w-4 h-4 mr-2 text-indigo-400" /> Academic Major
               </label>
               <input
                 type="text"
@@ -223,16 +223,50 @@ const StudentForm = () => {
                 required
                 value={formData.major}
                 onChange={handleChange}
-                className="block w-full rounded-xl border border-slate-200 px-4 py-3.5 bg-white shadow-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium placeholder:font-normal"
-                placeholder="e.g., Software Engineering"
+                className="block w-full px-5 py-3.5 glass-input font-medium"
+                placeholder="e.g., Quantum Computing"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="gpa" className="flex items-center text-sm font-semibold text-slate-700">
-                  <GraduationCap className="w-4 h-4 mr-1.5 text-slate-400" /> Cumulative GPA
+            <div className="space-y-3">
+              <label htmlFor="birth_year" className="flex items-center text-sm font-semibold text-slate-300 tracking-wide">
+                <Calendar className="w-4 h-4 mr-2 text-indigo-400" /> Birth Year
+              </label>
+              <input
+                type="number"
+                name="birth_year"
+                id="birth_year"
+                required
+                min="1900"
+                max="2100"
+                value={formData.birth_year || ''}
+                onChange={handleChange}
+                className="block w-full px-5 py-3.5 glass-input font-medium"
+              />
+            </div>
+
+            <div className="space-y-3 md:col-span-2">
+              <div className="flex justify-between items-center">
+                <label htmlFor="gpa" className="flex items-center text-sm font-semibold text-slate-300 tracking-wide">
+                  <GraduationCap className="w-4 h-4 mr-2 text-indigo-400" /> Cumulative GPA
                 </label>
+                {/* Real time GPA Badge */}
+                <div className={`px-3 py-1 rounded-md border text-sm font-bold flex items-center transition-colors duration-300 ${getGpaColorInfo(formData.gpa)}`}>
+                  {formData.gpa > 0 ? formData.gpa.toFixed(2) : "0.00"}
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <input
+                  type="range"
+                  min="0"
+                  max="4.0"
+                  step="0.01"
+                  name="gpa"
+                  value={formData.gpa || 0}
+                  onChange={handleChange}
+                  className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                />
                 <input
                   type="number"
                   name="gpa"
@@ -243,25 +277,8 @@ const StudentForm = () => {
                   max="4.0"
                   value={formData.gpa || ''}
                   onChange={handleChange}
-                  className="block w-full rounded-xl border border-slate-200 px-4 py-3.5 bg-white shadow-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium"
+                  className="w-24 px-4 py-3 glass-input font-medium text-center"
                   placeholder="0.00"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="birth_year" className="flex items-center text-sm font-semibold text-slate-700">
-                  <Calendar className="w-4 h-4 mr-1.5 text-slate-400" /> Birth Year
-                </label>
-                <input
-                  type="number"
-                  name="birth_year"
-                  id="birth_year"
-                  required
-                  min="1900"
-                  max="2100"
-                  value={formData.birth_year || ''}
-                  onChange={handleChange}
-                  className="block w-full rounded-xl border border-slate-200 px-4 py-3.5 bg-white shadow-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium"
                 />
               </div>
             </div>
@@ -269,20 +286,20 @@ const StudentForm = () => {
           </div>
 
           {/* Action Footer */}
-          <div className="mt-10 pt-6 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t border-slate-100">
+          <div className="mt-12 pt-8 flex flex-col-reverse sm:flex-row items-center justify-end gap-4 border-t border-white/5">
             <Link
               to="/"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 border border-slate-200 text-sm font-semibold rounded-full text-slate-700 bg-white hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 transition-all shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 border border-white/10 text-sm font-semibold rounded-xl text-slate-300 bg-white/5 hover:bg-white/10 hover:text-white transition-all duration-300"
             >
-              Cancel Operation
+              Cancel
             </Link>
             <button
               type="submit"
               disabled={loading || success}
-              className={`w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 border border-transparent shadow-soft text-sm font-semibold rounded-full text-white transition-all ${
+              className={`w-full sm:w-auto inline-flex items-center justify-center px-10 py-3.5 border border-transparent text-sm font-bold rounded-xl text-white transition-all duration-300 ${
                 loading || success 
-                ? 'bg-indigo-300 cursor-not-allowed shadow-none' 
-                : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-glow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                ? 'bg-indigo-500/50 cursor-not-allowed' 
+                : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 glow-primary'
               }`}
             >
               <Save className="-ml-1 mr-2 h-4 w-4" aria-hidden="true" />
