@@ -14,7 +14,7 @@ app = FastAPI(title="Student Management API")
 # Setup CORS to allow requests from the React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allows all origins for simplicity in development
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

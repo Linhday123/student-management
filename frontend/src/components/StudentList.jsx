@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PencilLine, Trash2, Search, User, BookOpen, Star, Hash, GraduationCap, Loader2, AlertCircle, X, Check } from 'lucide-react';
+import { PencilLine, Trash2, Search, User, BookOpen, Star, Hash, GraduationCap, Loader2, AlertCircle, X, Check, Download, UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api';
 
@@ -59,6 +59,26 @@ const StudentList = () => {
     student.major.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const exportCSV = () => {
+    if (students.length === 0) {
+      toast.error('Không có dữ liệu để xuất.');
+      return;
+    }
+    const headers = ['Mã SV', 'Họ Tên', 'Năm sinh', 'Ngành học', 'GPA'].join(',');
+    const rows = students.map(s => [s.student_id, `"${s.name}"`, s.birth_year, `"${s.major}"`, s.gpa].join(','));
+    const csvContent = '\uFEFF' + [headers, ...rows].join('\n'); // Add BOM for UTF-8
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'danh_sach_sinh_vien.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Xuất file CSV thành công!');
+  };
+
   // Statistics Calculation
   const avgGpa = students.length > 0 
     ? (students.reduce((acc, curr) => acc + curr.gpa, 0) / students.length).toFixed(2) 
@@ -68,14 +88,31 @@ const StudentList = () => {
   return (
     <div className="space-y-8 animate-fade-in relative z-20">
       
-      {/* Header text with Gradient */}
-      <div className="mb-2">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
-          Hệ thống <span className="text-gradient">Quản lý Sinh viên</span>
-        </h1>
-        <p className="mt-3 text-lg text-slate-400 max-w-2xl font-light">
-          Theo dõi và cập nhật hồ sơ, thông tin học thuật của sinh viên trong cơ sở dữ liệu.
-        </p>
+      {/* Header and Actions */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            Hệ thống <span className="text-gradient">Quản lý Sinh viên</span>
+          </h1>
+          <p className="mt-3 text-lg text-slate-400 max-w-2xl font-light">
+            Theo dõi và cập nhật hồ sơ, thông tin học thuật của sinh viên trong cơ sở dữ liệu.
+          </p>
+        </div>
+
+        <div className="flex space-x-3 flex-shrink-0">
+          <button
+            onClick={exportCSV}
+            className="inline-flex items-center px-4 py-3 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 border border-white/10 transition-all shadow-sm"
+          >
+            <Download className="w-5 h-5 mr-2" /> Xuất CSV
+          </button>
+          <Link
+            to="/add"
+            className="inline-flex items-center px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transition-all shadow-sm"
+          >
+            <UserPlus className="w-5 h-5 mr-2" /> Thêm Sinh viên
+          </Link>
+        </div>
       </div>
 
       {/* Stats Bar */}

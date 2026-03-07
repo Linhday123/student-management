@@ -16,11 +16,15 @@ const StudentForm = () => {
     birth_year: new Date().getFullYear() - 20,
     major: '',
     gpa: 0.0,
+    class_id: '',
   });
+
+  const [classes, setClasses] = useState([]);
   
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    fetchClasses();
     if (isEditMode) {
       if (location.state?.student) {
         setFormData(location.state.student);
@@ -29,6 +33,18 @@ const StudentForm = () => {
       }
     }
   }, [id, isEditMode, location.state]);
+
+  const fetchClasses = async () => {
+    try {
+      const response = await api.get('/classes');
+      setClasses(response.data);
+      if (!isEditMode && response.data.length > 0) {
+        setFormData(prev => ({ ...prev, class_id: prev.class_id || response.data[0].class_id }));
+      }
+    } catch (err) {
+      console.error("Error fetching classes:", err);
+    }
+  };
 
   const fetchStudent = async (studentId) => {
     try {
@@ -211,6 +227,27 @@ const StudentForm = () => {
                 className="block w-full px-5 py-3.5 glass-input font-medium placeholder:text-slate-500"
                 placeholder="VD: Kỹ thuật Phần mềm"
               />
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="class_id" className="flex items-center text-sm font-semibold text-slate-300 tracking-wide">
+                <BookOpen className="w-4 h-4 mr-2 text-indigo-400" /> Lớp học
+              </label>
+              <select
+                name="class_id"
+                id="class_id"
+                required
+                value={formData.class_id}
+                onChange={handleChange}
+                className="block w-full px-5 py-3.5 glass-input font-medium text-white appearance-none"
+              >
+                <option value="" disabled className="text-slate-500 bg-slate-900">Chọn lớp học</option>
+                {classes.map(c => (
+                  <option key={c.class_id} value={c.class_id} className="bg-slate-900 text-white">
+                    {c.class_name} ({c.class_id})
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-3">
