@@ -1,150 +1,125 @@
-# Student Management Web Application
+# 🎓 Hệ thống Quản lý Sinh viên (Student Management System)
 
-A full-stack student management application built with a React + Vite frontend and a FastAPI + SQLite backend.
+Một ứng dụng full-stack hoàn chỉnh chuyên về quản lý dữ liệu sinh viên. Được thiết kế chuyên nghiệp với kiến trúc hiện đại, tập trung vào hiệu suất, tính dễ dùng và tính thẩm mỹ cao cấp với phong cách **Dark Mode Glassmorphism**.
 
-## Architecture
+## 🌟 Tính năng Nổi bật
 
-- **Frontend**: React, Vite, TailwindCSS, React Router DOM, Axios, Lucide React (Icons).
-- **Backend**: FastAPI, SQLAlchemy, Pydantic, Uvicorn, SQLite.
+- **Giao diện Tuyệt đẹp:** Thiết kế cao cấp sử dụng Tailwind CSS với các hiệu ứng kính mờ (glassmorphism), neon phát sáng (glowing shadows), tối màu toàn diện, và hoạt ảnh mượt mà.
+- **Micro-Interactions (Tương tác siêu nhỏ):**
+  - Thanh trượt mượt mà (slider) cho việc nhập điểm GPA trực quan.
+  - Phản hồi hành động thời gian thực (Toast Notifications) cực kì nhạy bén và đẹp mắt.
+  - Xác nhận Xóa dữ liệu an toàn ngay tại dòng (Inline Delete) thay vì mở popup khó chịu.
+  - Hệ thống huy hiệu GPA đổi màu tự động (Xanh/Vàng/Đỏ tùy theo thành tích).
+- **Tìm kiếm rảnh tay:** Thanh tìm kiếm trực tiếp có thể lọc mọi thông tin (Tên, MSSV, Ngành học) theo thời gian thực mà không trễ nhịp.
 
-## Project Structure
+## 🛠️ Công nghệ Sử dụng
+
+- **Frontend:**
+  - `React.js` (chạy trên core nền tảng cực nhanh là `Vite`)
+  - `Tailwind CSS` (hệ thống CSS class tối tân)
+  - `Lucide React` (thư viện biểu tượng SVG đẹp nhất hiện nay)
+  - `React Router DOM` cho điều hướng trang đơn.
+  - `Axios` để kết nối API và `React Hot Toast` cho thông báo.
+- **Backend:**
+  - `FastAPI` (framework Python tốc độ cao, hoàn hảo cho API)
+  - `SQLAlchemy` & `Pydantic` (Quản lý Database và Schema validation)
+  - Lưu trữ trên cơ sở dữ liệu siêu nhẹ `SQLite` (`students.db`).
+  - Server được chạy bởi `Uvicorn`.
+
+## 📂 Cấu trúc Thư mục Hệ thống
 
 ```text
 student-management/
 ├── backend/
-│   ├── requirements.txt      # Python dependencies
-│   ├── database.py           # Database connection
-│   ├── models.py             # SQLAlchemy models
-│   ├── schemas.py            # Pydantic schemas
-│   ├── crud.py               # Database interaction operations
-│   ├── main.py               # FastAPI application entry point
-│   └── students.db           # SQLite database (auto-generated)
+│   ├── requirements.txt      # Gói phần mềm Python
+│   ├── database.py           # Thiết lập kết nối SQLite
+│   ├── models.py             # Cấu trúc bảng CSDL (SQLAlchemy)
+│   ├── schemas.py            # Quy chuẩn kiểu dữ liệu (Pydantic)
+│   ├── crud.py               # Lệnh thao tác logic với CSDL 
+│   ├── main.py               # Đầu não FastAPI và Routes API
+│   └── students.db           # (Auto-gen) Database gốc của bạn
 └── frontend/
-    ├── package.json          # Node dependencies
-    ├── tailwind.config.js    # TailwindCSS configuration
+    ├── package.json          # Gói node modules
+    ├── tailwind.config.js    # Tùy biến Tailwind
     └── src/
-        ├── api.js            # Axios configuration
-        ├── App.jsx           # Main layout and routing
-        ├── components/       # React components
-        │   ├── StudentList.jsx
-        │   └── StudentForm.jsx
-        └── index.css         # Base styles
+        ├── api.js            # Khai báo máy chủ trung tâm (Axios)
+        ├── App.jsx           # Bố cục layout và Cảnh báo
+        ├── index.css         # Reset và Glassmorphism Base
+        └── components/       
+            ├── StudentList.jsx  # Bảng danh mục và Thống kê
+            └── StudentForm.jsx  # Form nộp và chỉnh sửa
 ```
-
-## Setup Instructions
-
-### 1. Backend Setup
-
-Open a terminal and navigate to the `backend` directory:
-
-```bash
-cd backend
-```
-
-Create a virtual environment (optional but recommended):
-```bash
-python -m venv venv
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-```
-
-Install the dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-Run the backend server:
-```bash
-uvicorn main:app --reload
-```
-The FastAPI backend will run on `http://127.0.0.1:8000`. Swagger API docs are available at `http://127.0.0.1:8000/docs`.
-
-### 2. Frontend Setup
-
-Open a new terminal and navigate to the `frontend` directory:
-
-```bash
-cd frontend
-```
-
-Install the dependencies:
-```bash
-npm install
-```
-
-Run the Vite development server:
-```bash
-npm run dev
-```
-The React frontend will typically run on `http://127.0.0.1:5173`. Open this URL in your browser to interact with the application.
 
 ---
 
-## Example API Responses
+## 🚀 Hướng dẫn Cài đặt & Chạy Phần mềm
 
-### Create Student (`POST /students`)
+Để hệ thống hoạt động, bạn sẽ cần khởi chạy độc lập 2 máy chủ: một cho Giao diện (Frontend) và một cho Máy chủ Xử lý Dữ liệu (Backend).
+
+### BƯỚC 1: Khởi Động Máy Chủ Dữ Liệu (Backend)
+
+1. Mở Terminal (Cửa sổ Dòng Lệnh).
+2. Di chuyển vào thư mục backend:
+   ```bash
+   cd backend
+   ```
+3. (Tùy chọn nhưng khuyến nghị) Tạo môi trường ảo:
+   ```bash
+   python -m venv venv
+   # Nếu dùng Windows:
+   venv\Scripts\activate
+   # Nếu dùng macOS/Linux:
+   source venv/bin/activate
+   ```
+4. Cài đặt các thư viện lõi của dự án:
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. Đóng cầu dao khởi động Uvicorn:
+   ```bash
+   uvicorn main:app --reload
+   ```
+   *Lúc này Server API sẽ hoạt động tại `http://127.0.0.1:8000`. Bạn có thể theo dõi tài liệu cấu trúc API trực quan bằng cách truy xuất tự động tại `http://127.0.0.1:8000/docs`.*
+
+### BƯỚC 2: Khởi Động Giao Diện Trực Quan (Frontend)
+
+1. Cũng tại cửa sổ Dòng Lệnh (nên thêm một Tab Terminal mới dấu `+`), trỏ vào thư mục Frontend:
+   ```bash
+   cd frontend
+   ```
+2. Cài đặt các gói thư viện Node.js:
+   ```bash
+   npm install
+   ```
+3. Chạy lệnh kích hoạt giao diện tốc độ ánh sáng qua Vite:
+   ```bash
+   npm run dev
+   ```
+   *Vite sẽ thường mở đường truyền tại `http://localhost:5173`. Chỉ cần bấm vào link này (Ctrl + Click) để chiêm ngưỡng thế giới dữ liệu quản lý.*
+
+---
+
+## 💻 Thiết Khái Khoát về API Cốt Lõi
+
+Mọi kết nối dữ liệu được thiết lập chặt chẽ tại Server chạy qua `RESTful API`. Đây là các hành vi minh họa:
+
+### Thêm Mới Hồ Sơ Sinh Viên (`POST /students`)
 **Request Body:**
 ```json
 {
-  "student_id": "S1001",
-  "name": "Alice Johnson",
-  "birth_year": 2002,
-  "major": "Computer Science",
-  "gpa": 3.85
-}
-```
-**Response (200 OK):**
-```json
-{
-  "name": "Alice Johnson",
-  "birth_year": 2002,
-  "major": "Computer Science",
-  "gpa": 3.85,
-  "student_id": "S1001"
+  "student_id": "SE2001",
+  "name": "Nguyên Nguyệt Chi",
+  "birth_year": 2004,
+  "major": "Kỹ thuật Phầm mềm",
+  "gpa": 3.92
 }
 ```
 
-### Get All Students (`GET /students`)
-**Response (200 OK):**
-```json
-[
-  {
-    "name": "Alice Johnson",
-    "birth_year": 2002,
-    "major": "Computer Science",
-    "gpa": 3.85,
-    "student_id": "S1001"
-  }
-]
-```
+### Yêu Cầu Xuất Toàn Bộ Danh Sách (`GET /students`)
+Hệ thống sẽ phản hồi lại chuỗi mảng JSON chứa 100% hồ sơ học sinh.
 
-### Update Student (`PUT /students/S1001`)
-**Request Body:**
-```json
-{
-  "name": "Alice Smith",
-  "birth_year": 2002,
-  "major": "Software Engineering",
-  "gpa": 3.9
-}
-```
-**Response (200 OK):**
-```json
-{
-  "name": "Alice Smith",
-  "birth_year": 2002,
-  "major": "Software Engineering",
-  "gpa": 3.9,
-  "student_id": "S1001"
-}
-```
+### Cập Nhật Dữ Liệu Chuyên Môn (`PUT /students/SE2001`)
+Cho phép sửa đổi điểm GPA, ngành nghề hoặc tên (Thông qua giao diện, Mã Sinh viên ID bị vô hiệu hóa chỉnh sửa để đảm bảo tính nhất quán của Root CSDL).
 
-### Delete Student (`DELETE /students/S1001`)
-**Response (200 OK):**
-```json
-{
-  "message": "Student deleted successfully"
-}
-```
+### Loại Bỏ Hồ Sơ Hệ Thống (`DELETE /students/SE2001`)
+Lệnh gọi tiêu diệt hồ sơ vĩnh viễn trực tiếp trong Database (`students.db`), đi kèm với phản hồi HTTP 200 OK từ Server.

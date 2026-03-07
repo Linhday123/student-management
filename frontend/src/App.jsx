@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { UserPlus, GraduationCap, Github } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 import StudentList from './components/StudentList';
 import StudentForm from './components/StudentForm';
 
@@ -14,15 +15,15 @@ function Navbar() {
           
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center space-x-4 group">
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-2xl group-hover:from-indigo-400 group-hover:to-purple-500 transition-all shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-2xl group-hover:from-indigo-400 group-hover:to-purple-500 transition-all glow-primary">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
             <div>
               <span className="block font-bold text-2xl tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-indigo-400 group-hover:to-purple-400 transition-all duration-300">
-                EduManage
+                Linhday123
               </span>
               <span className="block text-xs font-medium text-slate-400 tracking-wider uppercase -mt-1">
-                Student System
+                Quản lý Sinh viên
               </span>
             </div>
           </Link>
@@ -34,7 +35,7 @@ function Navbar() {
               target="_blank" 
               rel="noreferrer"
               className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
-              title="View on GitHub"
+              title="Xem trên GitHub"
             >
               <Github className="h-5 w-5" />
             </a>
@@ -48,7 +49,7 @@ function Navbar() {
               }`}
             >
               <UserPlus className="h-4 w-4" />
-              <span>New Student</span>
+              <span>Thêm Mới</span>
             </Link>
           </div>
 
@@ -61,20 +62,40 @@ function Navbar() {
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden">
+      {/* Toast Notifications Provider */}
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: 'rgba(30, 41, 59, 0.9)',
+            color: '#fff',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '1rem',
+          },
+          success: {
+            iconTheme: { primary: '#10b981', secondary: '#fff' },
+          },
+          error: {
+            iconTheme: { primary: '#f43f5e', secondary: '#fff' },
+          }
+        }}
+      />
+
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-slate-900">
         
         {/* Decorative Background Elements (Glassmorphism Orbs) */}
-        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-indigo-600/20 blur-[120px]"></div>
-          <div className="absolute top-[20%] -right-[10%] w-[30%] h-[50%] rounded-full bg-purple-600/20 blur-[120px]"></div>
-          <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[40%] rounded-full bg-pink-600/10 blur-[120px]"></div>
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden mix-blend-screen">
+          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-indigo-600/20 blur-[130px]"></div>
+          <div className="absolute top-[20%] -right-[10%] w-[30%] h-[50%] rounded-full bg-purple-600/20 blur-[130px]"></div>
+          <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[40%] rounded-full bg-pink-600/10 blur-[130px]"></div>
         </div>
 
         <div className="relative z-10 flex flex-col min-h-screen">
           <Navbar />
 
           {/* Main Content Area */}
-          <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
+          <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in relative">
             <Routes>
               <Route path="/" element={<StudentList />} />
               <Route path="/add" element={<StudentForm />} />
@@ -86,7 +107,7 @@ function App() {
           <footer className="py-8 mt-auto text-center border-t border-white/5 bg-slate-900/50 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <p className="text-slate-400 text-sm font-medium">
-                &copy; {new Date().getFullYear()} <span className="text-indigo-400">EduManage</span>. Crafted with <span className="text-pink-500 mx-1">♥</span> and Glassmorphism.
+                &copy; {new Date().getFullYear()} <span className="text-indigo-400">Linhday123</span>. Thiết kế bằng <span className="text-pink-500 mx-1">♥</span> và Tailwind Glassmorphism.
               </p>
             </div>
           </footer>
