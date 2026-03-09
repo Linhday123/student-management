@@ -1,3 +1,6 @@
+# Thông tin sinh viên :
+Họ Tên : Võ Văn Linh 
+Mã Sinh Viên : 23730371
 # 🎓 Hệ thống Quản lý Sinh viên (Student Management System)
 
 Một ứng dụng full-stack hoàn chỉnh chuyên về quản lý dữ liệu sinh viên. Được thiết kế chuyên nghiệp với kiến trúc hiện đại, tập trung vào hiệu suất, tính dễ dùng và tính thẩm mỹ cao cấp với phong cách **Dark Mode Glassmorphism**.
